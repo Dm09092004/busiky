@@ -8,6 +8,7 @@ import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
 import Analytics from './pages/Analytics';
 import Profile from './pages/Profile';
+import Dashboard from './pages/Dashboard';
 import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout';
 import { CircularProgress, Box } from '@mui/material';
@@ -73,6 +74,9 @@ function App() {
           } />
 
           {/* Только для менеджера/админа */}
+          <Route path="/dashboard" element={
+            <ManagerRoute><Layout><Dashboard /></Layout></ManagerRoute>
+          } />
           <Route path="/projects/:id/analytics" element={
             <ManagerRoute><Layout><Analytics /></Layout></ManagerRoute>
           } />
