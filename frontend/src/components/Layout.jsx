@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   AppBar, Toolbar, Typography, Button, Box, Avatar,
-  Menu, MenuItem, Divider, IconButton, Tooltip, Chip,
+  Menu, MenuItem, Divider, Tooltip, Chip,
 } from '@mui/material';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -9,11 +9,7 @@ import TodayIcon from '@mui/icons-material/Today';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
-
-const NAV_ITEMS = [
-  { label: 'Мой день', path: '/my-day', icon: <TodayIcon fontSize="small" /> },
-  { label: 'Проекты', path: '/projects', icon: <FolderOpenIcon fontSize="small" /> },
-];
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 const ROLE_LABELS = {
   employee: { label: 'Сотрудник', color: 'primary' },
@@ -37,6 +33,15 @@ const Layout = ({ children }) => {
   const initials = user.first_name
     ? `${user.first_name[0]}${user.last_name?.[0] || ''}`.toUpperCase()
     : user.username[0].toUpperCase();
+
+  // Навигационные пункты
+  const NAV_ITEMS = [
+    { label: 'Мой день', path: '/my-day', icon: <TodayIcon fontSize="small" /> },
+    { label: 'Проекты', path: '/projects', icon: <FolderOpenIcon fontSize="small" /> },
+    ...(user.role === 'manager' || user.role === 'admin' ? [
+      { label: 'Управление', path: '/dashboard', icon: <DashboardIcon fontSize="small" /> },
+    ] : []),
+  ];
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
