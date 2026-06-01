@@ -10,10 +10,10 @@ class Task(models.Model):
         ('blocked', 'Заблокирована'),
     )
     PRIORITY_CHOICES = (
-        ('low', 'Низкий'),
-        ('medium', 'Средний'),
-        ('high', 'Высокий'),
-        ('critical', 'Критический'),
+        ('low', 1, 'Низкий'),
+        ('medium', 2, 'Средний'),
+        ('high', 3, 'Высокий'),
+        ('critical', 4, 'Критический'),
     )
 
     project = models.ForeignKey(
@@ -42,10 +42,11 @@ class Task(models.Model):
         verbose_name='Исполнитель'
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name='Статус')
-    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium', verbose_name='Приоритет')
+    priority = models.CharField(max_length=20, choices=[(c[0], c[2]) for c in PRIORITY_CHOICES], default='medium', verbose_name='Приоритет')
     planned_duration = models.IntegerField(help_text='Плановое время в минутах', verbose_name='Плановое время')
     actual_duration = models.IntegerField(default=0, help_text='Фактическое время в минутах', verbose_name='Фактическое время')
     deadline = models.DateTimeField(null=True, blank=True, verbose_name='Срок выполнения')
+    scheduled_date = models.DateField(null=True, blank=True, verbose_name='Запланированная дата')  # ✅ НОВОЕ
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Создана')
     started_at = models.DateTimeField(null=True, blank=True, verbose_name='Начало выполнения')
     completed_at = models.DateTimeField(null=True, blank=True, verbose_name='Завершена')
@@ -55,9 +56,18 @@ class Task(models.Model):
         verbose_name = 'Задача'
         verbose_name_plural = 'Задачи'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status', 'assigned_to']),
+            models.Index(fields=['scheduled_date', 'priority']),
+        ]
 
     def __str__(self):
         return f"{self.title} ({self.get_status_display()})"
+
+    def get_priority_level(self):
+        """Возвращает численный приоритет для сортировки"""
+        priority_map = {'low': 1, 'medium': 2, 'high': 3, 'critical': 4}
+        return priority_map.get(self.priority, 2)
 
 
 class TimeEntry(models.Model):
