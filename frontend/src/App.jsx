@@ -7,6 +7,7 @@ import MyDay from './pages/MyDay';
 import Projects from './pages/Projects';
 import ProjectDetail from './pages/ProjectDetail';
 import Analytics from './pages/Analytics';
+import Profile from './pages/Profile';
 import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout';
 import { CircularProgress, Box } from '@mui/material';
@@ -66,6 +67,9 @@ function App() {
           } />
           <Route path="/projects/:id" element={
             <PrivateRoute><Layout><ProjectDetail /></Layout></PrivateRoute>
+          } />
+          <Route path="/profile" element={
+            <PrivateRoute><Layout><Profile /></Layout></PrivateRoute>
           } />
 
           {/* Только для менеджера/админа */}
