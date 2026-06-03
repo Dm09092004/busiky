@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Task, TimeEntry
-from .schedule import generate_schedule
+
 
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
@@ -8,11 +8,13 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = '__all__'
         read_only_fields = ('created_at', 'actual_duration')
 
+
 class TimeEntrySerializer(serializers.ModelSerializer):
     class Meta:
         model = TimeEntry
         fields = '__all__'
-        read_only_fields = ('duration',)  
+        read_only_fields = ('duration',)
+
 
 class ScheduleSlotSerializer(serializers.Serializer):
     type = serializers.ChoiceField(choices=['work', 'break'])

@@ -33,15 +33,26 @@ def get_lunch_break(user, for_date=None):
 
 
 def get_tasks_for_day(user, for_date=None):
-    """Возвращает задачи пользователя на день (исключая выполненные)."""
+    """Возвращает задачи пользователя на день, отсортированные по приоритету."""
     if for_date is None:
         for_date = timezone.now().date()
-    tasks = Task.objects.filter(
-        assigned_to=user,
-        status__in=['new', 'in_progress']  # 'done' исключены
-    ).order_by('-priority', 'deadline', 'created_at')
-    return tasks
 
+    PRIORITY_ORDER = {'critical': 4, 'high': 3, 'medium': 2, 'low': 1}
+
+    tasks = list(Task.objects.filter(
+        assigned_to=user,
+        status__in=['new', 'in_progress']
+    ).select_related('project'))
+
+    # Сортируем по числовому приоритету (не по строке алфавитно)
+    tasks.sort(
+        key=lambda t: (
+            -PRIORITY_ORDER.get(t.priority, 2),
+            t.deadline or timezone.now() + __import__('datetime').timedelta(days=365),
+            t.created_at,
+        )
+    )
+    return tasks
 
 def create_slot(task, start, duration_minutes):
     end = start + timedelta(minutes=duration_minutes)
